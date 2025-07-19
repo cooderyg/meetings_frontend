@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  AlertDialog,
+  AlertDialog as AlertDialogPrimitive,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
@@ -23,7 +23,7 @@ interface Props {
   onClose: () => void;
 }
 
-export function ConfirmDialog({
+export function AlertDialog({
   title,
   description,
   leftBtnText,
@@ -42,7 +42,7 @@ export function ConfirmDialog({
   };
 
   return (
-    <AlertDialog open={isOpen} onOpenChange={onClose}>
+    <AlertDialogPrimitive open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
@@ -59,6 +59,6 @@ export function ConfirmDialog({
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
-    </AlertDialog>
+    </AlertDialogPrimitive>
   );
 }

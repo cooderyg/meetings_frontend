@@ -276,9 +276,7 @@ export function DataTable() {
                 >
                   <div className="flex flex-col items-center justify-center gap-6 w-full py-8">
                     <Newspaper size={24} className="text-slate-400" />
-                    <p className="text-slate-950 text-sm">
-                      표시할 내용이 없습니다.
-                    </p>
+                    <p className="text-sm">표시할 내용이 없습니다.</p>
                   </div>
                 </TableCell>
               </TableRow>
