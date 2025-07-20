@@ -2,12 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import { overlay } from "overlay-kit";
-import SpaceNameDialog from "./_components/space-name-dialog";
+import { MemberDialog } from "./_components/member-dialog";
 
 export default function Home() {
   const handleButton = () => {
     overlay.open(({ isOpen, close }) => (
-      <SpaceNameDialog isOpen={isOpen} onClose={close} />
+      <MemberDialog isOpen={isOpen} onClose={close} />
     ));
   };
 
