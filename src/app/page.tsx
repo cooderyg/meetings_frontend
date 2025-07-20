@@ -3,11 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { overlay } from "overlay-kit";
 import { MemberDialog } from "./_components/member-dialog";
+import { InviteMemberDialog } from "./_components/invite-member-dialog";
 
 export default function Home() {
   const handleButton = () => {
     overlay.open(({ isOpen, close }) => (
-      <MemberDialog isOpen={isOpen} onClose={close} />
+      <InviteMemberDialog isOpen={isOpen} onClose={close} />
     ));
   };
 

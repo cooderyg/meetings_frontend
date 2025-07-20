@@ -55,16 +55,6 @@ export function MemberDialog({ isOpen, onClose, onConfirm }: Props) {
     },
   ]);
 
-  const handleConfirm = () => {
-    const data: SpaceData = {
-      name: spaceName,
-      isPrivate,
-      participants,
-    };
-    onConfirm?.(data);
-    onClose();
-  };
-
   const getMemberList = () => {
     return (
       <>
@@ -83,30 +73,15 @@ export function MemberDialog({ isOpen, onClose, onConfirm }: Props) {
               currentPermission="can_edit"
               onPermissionChange={(permission) => {
                 console.log("권한 변경:", permission);
-                // 참여자 권한 업데이트 로직
               }}
               onResend={() => {
                 console.log("초대 재전송");
-                // 초대 재전송 로직
               }}
               onDelete={() => {
                 console.log("멤버 삭제");
-                // 멤버 삭제 로직
               }}
               memberName="박지민"
             />
-            {/* <Select defaultValue={participant.permission}>
-              <SelectTrigger className="w-32 h-8 text-sm border-gray-300">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="can edit">admin</SelectItem>
-                <SelectItem value="can view">full edit</SelectItem>
-                <SelectItem value="admin">can edit</SelectItem>
-                <SelectItem value="admin">can view</SelectItem>
-                <SelectItem value="admin">guest</SelectItem>
-              </SelectContent>
-            </Select> */}
           </div>
         ))}
       </>

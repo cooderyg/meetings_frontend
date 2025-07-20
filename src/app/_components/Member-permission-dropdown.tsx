@@ -19,6 +19,13 @@ interface MemberPermissionDropdownProps {
   onDelete?: () => void;
   memberName: string;
 }
+const permissions = [
+  { value: "admin", label: "admin" },
+  { value: "full_edit", label: "full edit" },
+  { value: "can_edit", label: "can edit" },
+  { value: "can_view", label: "can view" },
+  { value: "guest", label: "guest" },
+];
 
 export function MemberPermissionDropdown({
   currentPermission,
@@ -29,14 +36,6 @@ export function MemberPermissionDropdown({
 }: MemberPermissionDropdownProps) {
   const [selectedPermission, setSelectedPermission] =
     useState(currentPermission);
-
-  const permissions = [
-    { value: "admin", label: "admin" },
-    { value: "full_edit", label: "full edit" },
-    { value: "can_edit", label: "can edit" },
-    { value: "can_view", label: "can view" },
-    { value: "guest", label: "guest" },
-  ];
 
   const handlePermissionSelect = (permission: string) => {
     setSelectedPermission(permission);
