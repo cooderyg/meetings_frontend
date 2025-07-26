@@ -1,6 +1,7 @@
 "use client";
 
 import { OverlayProvider } from "overlay-kit";
+import { ThemeProvider } from "next-themes";
 import { ReactNode } from "react";
 
 interface Props {
@@ -8,5 +9,14 @@ interface Props {
 }
 
 export function Provider({ children }: Props) {
-  return <OverlayProvider>{children}</OverlayProvider>;
+  return (
+    // <ThemeProvider
+    //   attribute="class"
+    //   defaultTheme="system"
+    //   enableSystem
+    //   disableTransitionOnChange
+    // >
+    <OverlayProvider>{children}</OverlayProvider>
+    // </ThemeProvider>
+  );
 }

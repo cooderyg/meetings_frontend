@@ -2,14 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import { overlay } from "overlay-kit";
-import { MemberDialog } from "./_components/member-dialog";
-import { InviteMemberDialog } from "./_components/invite-member-dialog";
 import { InputShare } from "./_components/input-share-dialog";
-import {
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+
+import CommonHeader from "./_components/common-header";
 
 export default function Home() {
   const handleButton = () => {
@@ -19,8 +14,11 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen gap-6">
-      <Button onClick={handleButton}>Open</Button>
+    <div className="flex h-screen">
+      <main className="flex-1 overflow-auto">
+        <CommonHeader />
+        <Button onClick={handleButton}>Open</Button>
+      </main>
     </div>
   );
 }

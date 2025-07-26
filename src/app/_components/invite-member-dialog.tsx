@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { ChevronDown, Plus, Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { MemberPermissionDropdown } from "./Member-permission-dropdown";
+import { MemberPermissionDropdown } from "./member-permission-dropdown";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,

@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 interface Props extends React.ComponentProps<typeof Switch> {
   size?: "sm" | "md" | "lg";
-  className: string;
+  className?: string;
 }
 
 const sizeVariants = {
