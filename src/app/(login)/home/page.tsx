@@ -5,7 +5,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import AiBeforeChat from "@/app/_components/ai-before-chat";
+import AiBeforeChat from "@/app/_components/ai-chat";
 
 // 전체 컨테이너
 export default function HomePage() {

@@ -4,8 +4,6 @@ import { Button } from "@/components/ui/button";
 import { overlay } from "overlay-kit";
 import { InputShare } from "./_components/input-share-dialog";
 
-import CommonHeader from "./_components/common-header";
-
 export default function Home() {
   const handleButton = () => {
     overlay.open(({ isOpen, close }) => (
@@ -16,7 +14,6 @@ export default function Home() {
   return (
     <div className="flex h-screen">
       <main className="flex-1 overflow-auto">
-        <CommonHeader />
         <Button onClick={handleButton}>Open</Button>
       </main>
     </div>
