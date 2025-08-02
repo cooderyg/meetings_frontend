@@ -20,6 +20,10 @@ export default async function Login({ code }: Props) {
         fetch(`${process.env.NEXT_PUBLIC_APP_URL}/auth/sign-in/google`, {
           method: "POST",
           body: JSON.stringify({ code }),
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
         });
       } catch (error) {
         console.error("OAuth callback error:", error);

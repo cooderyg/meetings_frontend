@@ -6,11 +6,11 @@ import { useState } from "react";
 export default function GoogleLoginButton() {
   const [isLoading, setIsLoading] = useState(false);
   const handleGoogleLogin = () => {
-    window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?
-		client_id=${process.env.NEXT_PUBLIC_GOOGLE_AUTH_CLIENT_ID}
-		&redirect_uri=${process.env.NEXT_PUBLIC_GOOGLE_AUTH_REDIRECT_URL}
-		&response_type=code
-		&scope=email profile`;
+    const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_AUTH_CLIENT_ID;
+    const REDIRECT_URI = process.env.NEXT_PUBLIC_GOOGLE_AUTH_REDIRECT_URL;
+    const scope = 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email';
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=${scope}`;
+    window.location.href = googleAuthUrl;
   };
 
   return (
