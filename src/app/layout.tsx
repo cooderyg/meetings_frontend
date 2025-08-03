@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Abril_Fatface, Geist } from "next/font/google";
 import "./globals.css";
 import { Provider } from "./provider";
-import { Sidebar } from "@/app/_components/app-sidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

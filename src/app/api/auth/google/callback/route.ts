@@ -1,3 +1,4 @@
+import { http } from "@/app/api/http";
 import { NextResponse } from "next/server";
 
 type Status = {
@@ -16,28 +17,17 @@ interface GoogleLoginResponse {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
-  console.log("======code======", code);
 
   if (!code) {
-    return NextResponse.redirect(new URL("/login?error=no_code", request.url));
+    return NextResponse.redirect(new URL("/not-found", request.url));
   }
-
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/auth/sign-in/google`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ code }),
-    });
-
-    const data: GoogleLoginResponse = await response.json();
-
+    const data: GoogleLoginResponse = await http.post(`/auth/sign-in/google`, { code });
+  
     const redirectResponse = NextResponse.redirect(
       new URL("/", request.url)
     );
 
-    
     redirectResponse.cookies.set({
       name: "accessToken",
       value: data.data.accessToken,
@@ -48,7 +38,6 @@ export async function GET(request: Request) {
       maxAge: 60 * 60, 
     });
 
-    
     redirectResponse.cookies.set({
       name: "refreshToken",
       value: data.data.refreshToken,
@@ -60,10 +49,11 @@ export async function GET(request: Request) {
     });
 
     return redirectResponse;
+
   } catch (error) {
     console.error("Google login error:", error);
     return NextResponse.redirect(
-      new URL("/login?error=login_failed", request.url)
+      new URL("/not-found", request.url)
     );
   }
 }
