@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useMemo, useState } from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -36,10 +36,7 @@ import { Trash2 } from "lucide-react";
 import { Newspaper } from "lucide-react";
 
 const getRandomDate = () => {
-  const today = dayjs();
-  const randomDays = Math.floor(Math.random() * 90);
-  const randomDate = today.subtract(randomDays, "day");
-  return randomDate.format("YYYY년 MM월 DD일");
+  return dayjs().format("YYYY년 MM월 DD일");
 };
 
 const data: Payment[] = Array.from({ length: 100 }, (_, i) => {
@@ -110,13 +107,7 @@ export const columns: ColumnDef<Payment>[] = [
       <div className="capitalize">{row.getValue("recordingTime")}</div>
     ),
   },
-  {
-    accessorKey: "space",
-    header: "녹음 시간",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("space")}</div>
-    ),
-  },
+
   {
     id: "actions",
     enableHiding: false,
@@ -154,13 +145,13 @@ const columnLabels: Record<string, string> = {
 };
 
 export function DataTable() {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
     []
   );
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+    useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
     data,
@@ -175,7 +166,7 @@ export function DataTable() {
     onRowSelectionChange: setRowSelection,
     initialState: {
       pagination: {
-        pageSize: 20,
+        pageSize: 10,
       },
     },
     state: {
@@ -191,9 +182,11 @@ export function DataTable() {
       <div className="flex items-center py-4">
         <Input
           placeholder="제목, 참석자 검색"
-          onChange={(event) =>
-            table.getColumn("title")?.setFilterValue(event.target.value)
-          }
+          onChange={(event) => {
+            const value = event.target.value;
+              table.getColumn("title")?.setFilterValue(value);
+              table.getColumn("participant")?.setFilterValue(value);
+          }}
           className="max-w-sm"
         />
         <DropdownMenu>
@@ -281,7 +274,7 @@ export function DataTable() {
                 </TableCell>
               </TableRow>
             )}
-            {table.getRowModel().rows?.length >= 20 && (
+            {table.getRowModel().rows?.length >= 10 && table.getRowModel().rows?.length < data.length && (
               <TableRow>
                 <TableCell className="px-4 h-14 text-center items-center justify-start flex">
                   <Button variant={"outline"}>더보기</Button>

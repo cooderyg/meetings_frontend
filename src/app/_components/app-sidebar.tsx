@@ -1,9 +1,8 @@
-// src/app/_components/sidebar.tsx
-"use client";
+'use client';
 
-import React from "react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import React from 'react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import {
   Sidebar,
   SidebarContent,
@@ -16,14 +15,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuBadge,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-  SidebarProvider,
   SidebarSeparator,
-} from "@/components/ui/sidebar";
+} from '@/components/ui/sidebar';
 import {
-  ChevronUp,
   Pen,
   Home,
   Share2,
@@ -33,67 +27,41 @@ import {
   HelpCircle,
   Bell,
   Plus,
-  Crown,
   ChevronsUpDown,
-} from "lucide-react";
-import Link from "next/link";
+} from 'lucide-react';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
-// 사이드바 아이템 인터페이스
-interface ISidebarItem {
-  id: string;
-  label: string;
-  icon: React.ReactNode;
-  badge?: number;
-  href?: string;
-  onClick?: () => void;
-  isActive?: boolean;
-}
+export function AppSidebar() {
+  const searchParams = useSearchParams();
+  const tab = searchParams?.get('tab') || undefined;
 
-// 스페이스 아이템 인터페이스
-interface ISpaceItem {
-  id: string;
-  name: string;
-  icon: React.ReactNode;
-  isPrivate?: boolean;
-  href?: string;
-}
+  const workspaceName = "지민's Workspace";
+  const workspaceInitial = 'A';
+  const userName = '박지민';
+  const userEmail = 'm@example.com';
+  const notificationCount = 3;
+  const trialMinutesRemaining = 298;
+  const totalTrialMinutes = 300;
+  const draftCount = 3;
 
-// 사이드바 컴포넌트 Props
-interface ISidebarProps {
-  className?: string;
-  workspaceName?: string;
-  workspaceInitial?: string;
-  userName?: string;
-  userEmail?: string;
-  notificationCount?: number;
-  trialMinutesRemaining?: number;
-  totalTrialMinutes?: number;
-  draftCount?: number;
-  onNewNote?: () => void;
-  onUpgrade?: () => void;
-  onWorkspaceClick?: () => void;
-}
+  const onNewNote = () => {
+    console.log('onNewNote');
+  };
 
-export function AppSidebar({
-  className,
-  workspaceName = "지민's Workspace",
-  workspaceInitial = "A",
-  userName = "박지민",
-  userEmail = "m@example.com",
-  notificationCount = 3,
-  trialMinutesRemaining = 298,
-  totalTrialMinutes = 300,
-  draftCount = 3,
-  onNewNote,
-  onUpgrade,
-  onWorkspaceClick,
-  ...props
-}: ISidebarProps) {
+  const onUpgrade = () => {
+    console.log('onUpgrade');
+  };
+
+  const onWorkspaceClick = () => {
+    console.log('onWorkspaceClick');
+  };
+
   // 진행률 계산
   const progressPercentage = (trialMinutesRemaining / totalTrialMinutes) * 100;
 
   return (
-    <Sidebar className={cn("border-r", className)} {...props}>
+    <Sidebar className={cn('border-r')}>
       {/* 헤더 영역 */}
       <SidebarHeader className="border-b border-slate-200">
         <div className="flex items-center gap-3 mb-4">
@@ -119,14 +87,16 @@ export function AppSidebar({
         </Button>
       </SidebarHeader>
 
-      {/* 메인 컨텐츠 영역 */}
       <SidebarContent>
-        {/* 메인 네비게이션 */}
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={true} tooltip="Home">
+                <SidebarMenuButton
+                  asChild
+                  isActive={tab === undefined}
+                  tooltip="Home"
+                >
                   <Link href="/">
                     <Home className="size-4" />
                     <span>Home</span>
@@ -135,8 +105,12 @@ export function AppSidebar({
               </SidebarMenuItem>
 
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="초안">
-                  <Link href="/drafts">
+                <SidebarMenuButton
+                  asChild
+                  tooltip="초안"
+                  isActive={tab === 'drafts'}
+                >
+                  <Link href="/?tab=drafts">
                     <Pen className="size-4" />
                     <span>초안</span>
                     {draftCount > 0 && (
@@ -147,8 +121,12 @@ export function AppSidebar({
               </SidebarMenuItem>
 
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="공유 받은 노트">
-                  <Link href="shared">
+                <SidebarMenuButton
+                  asChild
+                  tooltip="공유 받은 노트"
+                  isActive={tab === 'shared'}
+                >
+                  <Link href="/?tab=shared">
                     <Share2 className="size-4" />
                     <span>공유 받은 노트</span>
                   </Link>
@@ -172,7 +150,7 @@ export function AppSidebar({
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild tooltip="general">
-                  <Link href="/spaces/general">
+                  <Link href="/space?tab=general">
                     <Folder className="size-4" />
                     <span>general</span>
                   </Link>
@@ -181,7 +159,7 @@ export function AppSidebar({
 
               <SidebarMenuItem>
                 <SidebarMenuButton asChild tooltip="Anote팀">
-                  <Link href="/spaces/anote-team">
+                  <Link href="/space?tab=anote-team">
                     <Lock className="size-4" />
                     <span>Anote팀</span>
                     <span className="text-xs text-slate-950 bg-gray-100 px-2 py-0.5 rounded">
@@ -201,7 +179,7 @@ export function AppSidebar({
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton tooltip="휴지통">
+                <SidebarMenuButton asChild tooltip="휴지통">
                   <Link href="/trash">
                     <Trash2 className="size-4" />
                     <span>휴지통</span>
@@ -211,7 +189,7 @@ export function AppSidebar({
 
               <SidebarMenuItem>
                 <SidebarMenuButton asChild tooltip="도움말">
-                  <Link href={"/help"}>
+                  <Link href={'/help'}>
                     <HelpCircle className="size-4" />
                     <span>도움말</span>
                   </Link>
