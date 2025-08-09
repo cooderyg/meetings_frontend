@@ -1,26 +1,35 @@
-'use client';
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Pen, Plus } from 'lucide-react';
-import React, { useState } from 'react';
-import AudioStreamer from './_components/audioStreamer';
+import AudioStreamer, { MEETING_ID } from './_components/audioStreamer';
+import AiSummary from './_components/ai-summary';
+import VoiceRecording from './_components/voice-recording';
+import { getAiSummary } from '@/app/api/meeting/get-ai-summary';
+import PersonalNote from './_components/personal-note';
 
 type Props = {};
 
 const participants = [
    {
-      name: '김민수',
+      name: '이정민',
    },
    {
-      name: '박지민',
+      name: '김혜림',
    },
    {
-      name: '최서연',
+      name: '강영구',
+   },
+   {
+      name: '류원희',
+   },
+   {
+      name: '인한별',
    },
 ];
 
 export default function MeetingPage(props: Props) {
-   const [transcriptText, setTranscriptText] = useState('');
+   const aiData = getAiSummary({ meetingId: MEETING_ID });
+   console.log('aiData', aiData);
+
    return (
       <main className="flex flex-col justify-center max-w-[900px] mx-auto">
          <section>
@@ -54,29 +63,24 @@ export default function MeetingPage(props: Props) {
                   <TabsTrigger value="memo" className="cursor-pointer">
                      메모
                   </TabsTrigger>
+                  <TabsTrigger value="ai-summary" className="cursor-pointer">
+                     AI 요약
+                  </TabsTrigger>
                </TabsList>
 
                <TabsContent value="voiceRecording">
-                  {transcriptText.length > 0 ? (
-                     <p>{transcriptText}</p>
-                  ) : (
-                     <p className="text-slate-500 text-sm font-normal">
-                        현재 저장된 음성이 없습니다. 아래 버튼을 눌러 녹음을 시작해 주세요.
-                     </p>
-                  )}
+                  <VoiceRecording />
                </TabsContent>
                <TabsContent value="memo">
-                  <p className="text-slate-500 text-sm font-normal">
-                     현재 저장된 음성이 없습니다. 아래 버튼을 눌러 녹음을 시작해 주세요.
-                  </p>
+                  <PersonalNote />
+               </TabsContent>
+               <TabsContent value="ai-summary">
+                  <AiSummary />
                </TabsContent>
             </Tabs>
          </section>
 
-         <AudioStreamer
-            className="fixed bottom-6 left-1/2 transform -translate-x-1/2"
-            setTranscriptText={setTranscriptText}
-         />
+         <AudioStreamer className="fixed bottom-6 left-1/2 transform -translate-x-1/2" />
       </main>
    );
 }
