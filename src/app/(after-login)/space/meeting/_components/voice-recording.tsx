@@ -3,12 +3,12 @@
 import { useTranscriptData } from '@/app/store/trance-data';
 
 export default function VoiceRecording() {
-   const [transcriptData] = useTranscriptData();
+   const { transcript } = useTranscriptData();
    return (
       <>
-         {transcriptData.length > 0 ? (
+         {transcript.length > 0 ? (
             <div className="space-y-6">
-               {transcriptData.map((data, index) => (
+               {transcript.map((data, index) => (
                   <div key={`${data.time}-${index}`}>
                      <div>
                         <span className="text-gray-500 font-normal text-base">

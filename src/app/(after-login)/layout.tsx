@@ -1,27 +1,20 @@
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "../_components/app-sidebar";
-import CommonHeader from "../_components/common-header";
-import AiChat from "../_components/ai-chat";
-
+import { AppSidebar } from '../_components/app-sidebar';
+import CommonHeader from '../_components/common-header';
+import { AfterLoginProvider } from '../provider/after-login-provider';
 
 interface Props {
-  children: React.ReactNode;
-  
+   children: React.ReactNode;
 }
 
 export default function Layout({ children }: Props) {
+   return (
+      <AfterLoginProvider>
+         <AppSidebar />
 
-  
-  return (
-    <SidebarProvider>
-      <AppSidebar  />
-
-      <main className="w-full">
-        <CommonHeader />
-        {children}
-      </main>
-
-      {/* <AiChat /> */}
-    </SidebarProvider>
-  );
+         <main className="w-full">
+            <CommonHeader />
+            {children}
+         </main>
+      </AfterLoginProvider>
+   );
 }

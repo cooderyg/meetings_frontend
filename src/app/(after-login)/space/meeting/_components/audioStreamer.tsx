@@ -4,7 +4,8 @@ import { ClientToServerEvents, ServerToClientEvents } from '@/app/tpye/socket';
 import { cn } from '@/lib/utils';
 import React, { useState, useRef, useEffect, Dispatch, SetStateAction } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { TranscriptData, useTranscriptData } from '@/app/store/trance-data';
+import { TranscriptData, useTranscriptData, useTranscriptDataStore } from '@/app/store/trance-data';
+import { formatDate } from '@/lib/format-date';
 
 interface Props {
    className?: string;
@@ -13,27 +14,18 @@ interface Props {
 export const MEETING_ID = 'ea413ae4-3a66-4e52-9975-3d06ab33b02a';
 
 export default function RecordingButton({ className }: Props) {
-   const [isConnected, setIsConnected] = useState(false);
-   const [isInitialized, setIsInitialized] = useState(false);
    const [isRecording, setIsRecording] = useState(false);
-   const [isPaused, setIsPaused] = useState(false);
    const [meetingId, setMeetingId] = useState(MEETING_ID);
    const [audioLevel, setAudioLevel] = useState(0);
    const [micGain, setMicGain] = useState(5.0);
 
+   const timerRef = useRef<NodeJS.Timeout | null>(null);
    const socketRef = useRef<Socket<ServerToClientEvents, ClientToServerEvents> | null>(null);
    const audioContextRef = useRef<any | null>(null);
    const processorRef = useRef<any | null>(null);
    const streamRef = useRef<MediaStream | null>(null);
 
-   const [transcriptData, setTranscriptData, addTranscript] = useTranscriptData();
-
-   useEffect(() => {
-      console.log('isConnected', isConnected);
-      console.log('isInitialized', isInitialized);
-      console.log('isRecording', isRecording);
-      console.log('isPaused', isPaused);
-   }, [isPaused, isRecording, isInitialized, isConnected]);
+   const { addTranscript, recordingTime } = useTranscriptData();
 
    // Socket.IO 연결 설정
    const connectSocket = () => {
@@ -47,29 +39,22 @@ export default function RecordingButton({ className }: Props) {
 
          socketRef.current.on('connect', () => {
             console.log('Socket.IO 연결 성공!', socketRef.current?.id);
-            setIsConnected(true);
          });
 
          socketRef.current.on('disconnect', reason => {
             console.log('Socket.IO 연결 종료:', reason);
-            setIsConnected(false);
-            setIsInitialized(false);
             setIsRecording(false);
-            setIsPaused(false);
          });
 
          socketRef.current.on('connect_error', error => {
             console.error('Socket.IO 연결 오류:', error);
-            setIsConnected(false);
+            socketRef.current?.disconnect();
          });
 
          // 결과 수신 이벤트
          socketRef.current.on('write-streaming-recognize', data => {
-            console.log('🎤 STT 실시간 결과:', data);
             console.log('🎤 STT 실시간 결과 (전체 응답):', data);
             console.log('🎤 STT speakerTag:', data.speakerTag);
-            // console.log('🎤 응답 구조:', Object.keys(data));
-            // console.log('🎤 content 필드:', data.content);
 
             if (data.isFinal) {
                const newTranscriptData: TranscriptData = {
@@ -79,37 +64,6 @@ export default function RecordingButton({ className }: Props) {
                };
 
                addTranscript(newTranscriptData);
-               // setTranscriptData(prev => {
-               //    const lastItem = prev[prev.length - 1];
-
-               //    // 🎯 대화 구분 로직
-               //    const shouldCreateNewSegment =
-               //       !lastItem || // 첫 번째 항목
-               //       (data.speakerTag && lastItem.speakerTag !== data.speakerTag) || // 화자 변경
-               //       data.time - lastItem.time > 3; // 3초 이상 간격
-
-               //    if (shouldCreateNewSegment) {
-               //       // 새로운 발화 구간 생성
-               //       return [
-               //          ...prev,
-               //          {
-               //             ...newTranscriptData,
-               //             isNewSegment: true,
-               //          },
-               //       ];
-               //    } else {
-               //       // 같은 화자의 연속 발화 - 마지막 항목에 추가
-               //       return prev.map((item, index) =>
-               //          index === prev.length - 1
-               //             ? {
-               //                  ...item,
-               //                  content: item.content + ' ' + newTranscriptData.content,
-               //                  time: Math.max(item.time, newTranscriptData.time),
-               //               }
-               //             : item,
-               //       );
-               //    }
-               // });
             }
          });
 
@@ -159,8 +113,6 @@ export default function RecordingButton({ className }: Props) {
             encoding: 'LINEAR16',
             diarization: 'enabled',
          });
-
-         setIsInitialized(true);
       }
    };
 
@@ -169,7 +121,7 @@ export default function RecordingButton({ className }: Props) {
       if (socketRef.current && socketRef.current.connected) {
          console.log('STT 스트리밍 일시정지');
          socketRef.current.emit('pause-streaming-recognize');
-         setIsPaused(true);
+         useTranscriptDataStore.getState().pauseRecording();
       }
    };
 
@@ -178,7 +130,7 @@ export default function RecordingButton({ className }: Props) {
       if (socketRef.current && socketRef.current.connected) {
          console.log('STT 스트리밍 재개');
          socketRef.current.emit('resume-streaming-recognize');
-         setIsPaused(false);
+         useTranscriptDataStore.getState().resumeRecording();
       }
    };
 
@@ -205,9 +157,9 @@ export default function RecordingButton({ className }: Props) {
       }
 
       setIsRecording(false);
-      setIsInitialized(false);
-      setIsPaused(false);
       setAudioLevel(0);
+      stopTimer();
+      useTranscriptDataStore.getState().stopRecording();
    };
 
    // Socket.IO 연결 해제
@@ -220,7 +172,6 @@ export default function RecordingButton({ className }: Props) {
          socketRef.current.disconnect();
          socketRef.current = null;
       }
-      setIsConnected(false);
    };
 
    // 오디오 스트림 시작 함수
@@ -294,8 +245,10 @@ export default function RecordingButton({ className }: Props) {
 
          source.connect(processorRef.current);
          processorRef.current.connect(audioContextRef.current.destination);
-
          setIsRecording(true);
+
+         useTranscriptDataStore.getState().startRecording();
+         startTimer();
          console.log('✅ 직접 오디오 스트림 완료');
       } catch (error) {
          console.error('❌ 직접 오디오 스트림 실패:', error);
@@ -303,12 +256,12 @@ export default function RecordingButton({ className }: Props) {
       }
    };
 
-   // 녹음 버튼 클릭 핸들러 - 완전 리팩토링
+   // 녹음 버튼 클릭 핸들러
    const handleRecordingClick = async () => {
       if (!isRecording) {
          try {
-            console.log('🚀 녹음 시작 - 완전 자동화 프로세스');
             // 1단계: 소켓 연결
+            console.log('🚀 녹음 시작 - 완전 자동화 프로세스');
             if (!socketRef.current?.connected) {
                console.log('1️⃣ 소켓 연결 중...');
                await new Promise<void>((resolve, reject) => {
@@ -339,11 +292,7 @@ export default function RecordingButton({ className }: Props) {
             await startAudioStream();
          } catch (error) {
             console.error('❌ 녹음 시작 실패:', error);
-            // 에러 시 상태 초기화
-            setIsConnected(false);
-            setIsInitialized(false);
             setIsRecording(false);
-            setIsPaused(false);
          }
       } else {
          console.log('🛑 녹음 정지 중...');
@@ -352,11 +301,29 @@ export default function RecordingButton({ className }: Props) {
       }
    };
 
+   // 🔥 타이머 시작
+   const startTimer = () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+
+      timerRef.current = setInterval(() => {
+         useTranscriptDataStore.getState()._tickTimer();
+      }, 1000);
+   };
+
+   // 🔥 타이머 정지
+   const stopTimer = () => {
+      if (timerRef.current) {
+         clearInterval(timerRef.current);
+         timerRef.current = null;
+      }
+   };
+
    // 컴포넌트 언마운트 시 정리
    useEffect(() => {
       return () => {
          endStreamingRecognize();
          disconnectSocket();
+         stopTimer();
       };
    }, []);
 
@@ -381,7 +348,7 @@ export default function RecordingButton({ className }: Props) {
             )}
             <div className="flex flex-col">
                <span className="text-sm font-normal">
-                  {isRecording ? '01:30 녹음 중' : '버튼을 눌러 녹음 시작하기'}
+                  {isRecording ? `${formatDate.recordingMMSS(recordingTime)} 녹음 중` : '버튼을 눌러 녹음 시작하기'}
                </span>
                {isRecording && (
                   <span className="text-xs text-gray-500">오디오 레벨: {(audioLevel * 100).toFixed(1)}%</span>

@@ -1,59 +1,19 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Pen, Plus } from 'lucide-react';
-import AudioStreamer, { MEETING_ID } from './_components/audioStreamer';
+import AudioStreamer from './_components/audioStreamer';
 import AiSummary from './_components/ai-summary';
 import VoiceRecording from './_components/voice-recording';
-import { getAiSummary } from '@/app/api/meeting/get-ai-summary';
 import PersonalNote from './_components/personal-note';
+import MeetingHeader from './_components/meeting-header';
 
 type Props = {};
 
-const participants = [
-   {
-      name: '이정민',
-   },
-   {
-      name: '김혜림',
-   },
-   {
-      name: '강영구',
-   },
-   {
-      name: '류원희',
-   },
-   {
-      name: '인한별',
-   },
-];
-
 export default function MeetingPage(props: Props) {
-   const aiData = getAiSummary({ meetingId: MEETING_ID });
-   console.log('aiData', aiData);
+   // const aiData = getAiSummary({ meetingId: MEETING_ID });
+   // console.log('aiData', aiData);
 
    return (
       <main className="flex flex-col justify-center max-w-[900px] mx-auto">
-         <section>
-            <div className="flex items-center gap-1.5">
-               <Pen size={24} />
-               <h1 className="text-2xl font-semibold">Untitled</h1>
-            </div>
-            <p className="mt-1.5 text-slate-500   text-sm">2025년 6월 5일 오전 12:05 ∙ 0초</p>
-            <div className="flex items-center gap-1.5 mt-3 pt-[10px] pb-[30px]">
-               {participants.map(participant => (
-                  <div key={participant.name} className="flex items-center gap-1">
-                     <div className="rounded-full text-slate-500 bg-slate-100 text-sm font-normal w-6 h-6 flex justify-center items-center">
-                        {participant.name.substring(0, 1)}
-                     </div>
-                     <span>{participant.name}</span>
-                  </div>
-               ))}
-               <button className="flex items-center gap-1 ml-4 cursor-pointer">
-                  <span className="text-sm font-medium">참석자 추가</span>
-                  <Plus size={16} />
-               </button>
-            </div>
-         </section>
-
+         <MeetingHeader />
          <section>
             <Tabs defaultValue="voiceRecording" className="gap-6">
                <TabsList>
