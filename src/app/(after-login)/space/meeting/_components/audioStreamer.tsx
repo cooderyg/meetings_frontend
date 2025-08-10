@@ -9,13 +9,11 @@ import { formatDate } from '@/lib/format-date';
 
 interface Props {
    className?: string;
+   meetingId: string;
 }
 
-export const MEETING_ID = 'ea413ae4-3a66-4e52-9975-3d06ab33b02a';
-
-export default function RecordingButton({ className }: Props) {
+export default function RecordingButton({ className, meetingId }: Props) {
    const [isRecording, setIsRecording] = useState(false);
-   const [meetingId, setMeetingId] = useState(MEETING_ID);
    const [audioLevel, setAudioLevel] = useState(0);
    const [micGain, setMicGain] = useState(5.0);
 
